@@ -20,8 +20,6 @@ export const router = new VueRouter({
   ],
 });
 
-Vue.prototype.dictionary = window.dictionary;
-
 new Vue({
   el: "#app",
   router,

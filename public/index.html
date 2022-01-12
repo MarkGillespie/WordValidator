@@ -6,9 +6,18 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="stylesheet" href="<%= BASE_URL %>stylesheets/style.css">
-    <script type="text/javascript" src="<%= BASE_URL %>resources/definitions.js"></script>
+    <script type="text/javascript" src="<%= BASE_URL %>resources/definitions_1-6.js"></script>
     <script type="text/javascript" src="<%= BASE_URL %>resources/lexicon_packed.js"></script>
-    <script type="text/javascript">window.dictionary = dictionary;window.packed_lexicon=packed_lexicon;</script>
+    <script type="text/javascript">
+     window.dictionary = definitions_1_6;
+     window.definition_buckets = [
+         {start: 1, end: 6, loaded: true},
+         {start: 7, end: 8, loaded: false},
+         {start: 9, end: 10, loaded: false},
+         {start: 11, end: 1000, loaded: false},
+     ];
+     window.packed_lexicon=packed_lexicon;
+    </script>
     <title>Word Validator</title>
   </head>
 
