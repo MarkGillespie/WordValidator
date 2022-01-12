@@ -40,6 +40,7 @@ export default {
   padding: 0.3em;
   font-size: large;
   width: 100%;
+  resize: vertical;
   border-radius: 0.5em;
   border: 0px;
   box-shadow: 0 0.05em 0.25em rgba(0, 0, 0, 0.432);
