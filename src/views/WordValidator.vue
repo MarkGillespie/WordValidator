@@ -77,7 +77,6 @@ export default {
     useCustomLexicon(customLexicon) {
       this.customLexicon = customLexicon;
       this.checkWord();
-      console.log(this.customLexicon);
     },
     checkInputWord(word) {
       this.word = word;
