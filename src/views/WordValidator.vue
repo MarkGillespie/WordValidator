@@ -91,7 +91,7 @@ export default {
         if (this.dictionary && this.dictionary[this.upperCaseWord]) {
           this.definition = this.dictionary[this.upperCaseWord];
         } else {
-          this.definition = "unknown definition";
+          this.definition = "";
           for (let iB = 1; iB < window.definition_buckets.length; iB++) {
             const bucket = window.definition_buckets[iB];
             const l = this.word.length;
