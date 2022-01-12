@@ -1,6 +1,7 @@
 <template>
-  <div class="completions-contain">
-    <ul class="completions">
+  <div v-bind:class="'completions-contain ' + width">
+    <span v-if="title.length > 0">{{ title }}</span>
+    <ul class="completions" v-bind:id="id">
       <li
         class="completion"
         v-for="completion in shownCompletions"
@@ -68,7 +69,7 @@ function measureTextWidth(str) {
 export default {
   name: "CompletionSection",
   components: {},
-  props: ["completions"],
+  props: ["completions", "id", "width", "title"],
   data() {
     return {
       showAll: false,
@@ -95,12 +96,8 @@ export default {
             measureTextWidth(completion)
           ))
       );
-      // Get the root element
-      const r = document.querySelector(":root");
-      r.style.setProperty(
-        "--completion-column-width",
-        completionsWidth + 1 + "em"
-      );
+      document.getElementById(this.id).style["column-width"] =
+        completionsWidth + 1 + "em";
     },
   },
 };
@@ -120,13 +117,21 @@ export default {
   border-radius: 0.5em;
   box-shadow: 0 0.05em 0.25em rgba(0, 0, 0, 0.432);
 }
+.completions-contain.full {
+  display: inline-block;
+  width: 100%;
+}
+
+.completions-contain.half {
+  display: inline-block;
+  width: 50%;
+}
 
 .completions {
   padding: 0;
   margin: 0;
   min-height: 5em;
   list-style-type: none; /* Remove bullets */
-  column-width: var(--completion-column-width);
 }
 
 .completion {

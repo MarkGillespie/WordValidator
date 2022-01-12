@@ -37,7 +37,6 @@ export default {
     },
   },
 
-  /*  grid-auto-columns: repeat( auto-fit, minmax(var(--completion-column-width), 1fr) ); */
 };
 </script>
 

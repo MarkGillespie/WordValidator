@@ -4,7 +4,22 @@
       <h1 class="title">Anagrammer</h1>
     </header>
     <InputSection @textInput="checkInputWord" />
-    <CompletionSection :completions="completions" />
+    <div class="horizontal-layout">
+      <CompletionSection
+        :completions="completions"
+        :id="'standardCompletions'"
+        :title="usingCustomLexicon ? 'Standard Words' : ''"
+        :width="usingCustomLexicon ? 'half' : 'full'"
+      />
+      <CompletionSection
+        v-if="usingCustomLexicon"
+        :completions="customLexiconCompletions"
+        :id="'customCompletions'"
+        :title="'Custom Words'"
+        :width="'half'"
+      />
+    </div>
+    <LexiconInput @customLexiconInput="useCustomLexicon" />
     <Navigation />
   </div>
 </template>
@@ -12,6 +27,7 @@
 <script>
 import InputSection from "../components/InputSection.vue";
 import CompletionSection from "../components/CompletionSection.vue";
+import LexiconInput from "../components/LexiconInput.vue";
 import Navigation from "../components/Navigation.vue";
 
 export default {
@@ -21,6 +37,7 @@ export default {
     InputSection,
     CompletionSection,
     Navigation,
+    LexiconInput,
   },
   data() {
     return {
@@ -28,6 +45,8 @@ export default {
       completions: [],
       word: "",
       upperCaseWord: "",
+      customLexicon: null,
+      customLexiconCompletions: [],
     };
   },
   mounted: function () {
@@ -36,7 +55,17 @@ export default {
       this.checkWord();
     }
   },
+  computed: {
+    usingCustomLexicon: function () {
+      return this.customLexicon && this.customLexicon.length > 0;
+    },
+  },
   methods: {
+    useCustomLexicon(customLexicon) {
+      this.customLexicon = customLexicon;
+      this.checkWord();
+      console.log(this.customLexicon);
+    },
     checkInputWord(word) {
       this.word = word;
       this.checkWord();
@@ -44,6 +73,7 @@ export default {
     checkWord() {
       this.upperCaseWord = this.word.toUpperCase();
       this.completions = [];
+      this.customLexiconCompletions = [];
 
       let checkPlainText = /^([A-Z]|\.)*$/;
       if (checkPlainText.test(this.upperCaseWord)) {
@@ -69,6 +99,16 @@ export default {
             this.completions.push(word);
           }
         });
+        if (this.usingCustomLexicon) {
+          this.customLexicon.forEach((word) => {
+            if (
+              word.length === wordLen &&
+              queryRegexp.test(word.split("").sort().join(""))
+            ) {
+              this.customLexiconCompletions.push(word);
+            }
+          });
+        }
       }
     },
   },

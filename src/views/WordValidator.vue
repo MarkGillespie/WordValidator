@@ -9,7 +9,22 @@
       :definition="definition"
     />
     <InputSection @textInput="checkInputWord" />
-    <CompletionSection :completions="completions" />
+    <div class="horizontal-layout">
+      <CompletionSection
+        :completions="completions"
+        :id="'standardCompletions'"
+        :title="usingCustomLexicon ? 'Standard Words' : ''"
+        :width="usingCustomLexicon ? 'half' : 'full'"
+      />
+      <CompletionSection
+        v-if="usingCustomLexicon"
+        :completions="customLexiconCompletions"
+        :id="'customCompletions'"
+        :title="'Custom Words'"
+        :width="'half'"
+      />
+    </div>
+    <LexiconInput @customLexiconInput="useCustomLexicon" />
     <Navigation />
   </div>
 </template>
@@ -18,6 +33,7 @@
 import DefinitionSection from "../components/DefinitionSection.vue";
 import InputSection from "../components/InputSection.vue";
 import CompletionSection from "../components/CompletionSection.vue";
+import LexiconInput from "../components/LexiconInput.vue";
 import Navigation from "../components/Navigation.vue";
 // import { PackedTrie } from "../../public/resources/packed-trie.js";
 
@@ -29,6 +45,7 @@ export default {
     InputSection,
     CompletionSection,
     Navigation,
+    LexiconInput,
   },
   data() {
     return {
@@ -41,7 +58,8 @@ export default {
       log: "",
       // lex: new PackedTrie(window.packed_lexicon),
       lex: window.lexicon,
-      completionsPreview: [],
+      customLexicon: null,
+      customLexiconCompletions: [],
     };
   },
   mounted: function () {
@@ -50,7 +68,17 @@ export default {
       this.checkWord();
     }
   },
+  computed: {
+    usingCustomLexicon: function () {
+      return this.customLexicon && this.customLexicon.length > 0;
+    },
+  },
   methods: {
+    useCustomLexicon(customLexicon) {
+      this.customLexicon = customLexicon;
+      this.checkWord();
+      console.log(this.customLexicon);
+    },
     checkInputWord(word) {
       this.word = word;
       this.checkWord();
@@ -59,13 +87,14 @@ export default {
       if (!this.word) this.word = "";
       this.upperCaseWord = this.word.toUpperCase();
 
+      this.completions = [];
+      this.customLexiconCompletions = [];
+
       let checkPlainText = /^([A-Z]|\.)*$/;
       let queryRegexp;
       if (checkPlainText.test(this.upperCaseWord)) {
-        this.completions = [];
         queryRegexp = new RegExp("^" + this.upperCaseWord);
       } else {
-        this.completions = [];
         queryRegexp = new RegExp("^" + this.word + "$");
       }
       if (this.word.length >= 1) {
@@ -74,6 +103,17 @@ export default {
             this.completions.push(word);
           }
         });
+
+        if (this.usingCustomLexicon) {
+          this.customLexicon.forEach((word) => {
+            if (
+              queryRegexp.test(word) ||
+              queryRegexp.test(word.toLowerCase())
+            ) {
+              this.customLexiconCompletions.push(word);
+            }
+          });
+        }
       }
 
       if (this.completions.length > 0) {
@@ -141,5 +181,11 @@ export default {
   .title {
     display: none;
   }
+}
+
+.horizontal-layout {
+  display: flex;
+  flex-direction: horizontal;
+  gap: 1em;
 }
 </style>
