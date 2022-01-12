@@ -56,6 +56,7 @@ export default {
       this.checkWord();
     },
     checkWord() {
+      if (!this.word) this.word = "";
       this.upperCaseWord = this.word.toUpperCase();
 
       let checkPlainText = /^([A-Z]|\.)*$/;
