@@ -24,7 +24,7 @@ export default {
   },
   data() {
     return {
-      dictionary: this.dictionary,
+      lex: window.lexicon,
       completions: [],
       word: "",
       upperCaseWord: "",
@@ -61,14 +61,14 @@ export default {
           queryRegexp = new RegExp("^" + sortedWord + "$");
         }
 
-        for (const key in this.dictionary) {
+        this.lex.forEach((word) => {
           if (
-            key.length === wordLen &&
-            queryRegexp.test(key.split("").sort().join(""))
+            word.length === wordLen &&
+            queryRegexp.test(word.split("").sort().join(""))
           ) {
-            this.completions.push(key);
+            this.completions.push(word);
           }
-        }
+        });
       }
     },
   },

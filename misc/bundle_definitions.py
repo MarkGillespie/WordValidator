@@ -25,3 +25,10 @@ def printDefinitions(lower, upper, bucket):
 for lower, upper, bucket in zip(buckets, buckets[1:], subdefinitions):
     print(f"[{lower+1}-{upper}] :\t {len(bucket)} words")
     printDefinitions(lower, upper, bucket)
+
+with open("lexicon.js", "w") as f:
+    f.write("var lexicon = [\n")
+    for word in definitions:
+        f.write(f"\"{word}\",")
+    f.write("]")
+

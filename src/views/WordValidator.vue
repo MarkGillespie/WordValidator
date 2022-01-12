@@ -19,7 +19,7 @@ import DefinitionSection from "../components/DefinitionSection.vue";
 import InputSection from "../components/InputSection.vue";
 import CompletionSection from "../components/CompletionSection.vue";
 import Navigation from "../components/Navigation.vue";
-import { PackedTrie } from "../../public/resources/packed-trie.js";
+// import { PackedTrie } from "../../public/resources/packed-trie.js";
 
 export default {
   name: "WordValidator",
@@ -39,7 +39,8 @@ export default {
       isWord: false,
       definition: "",
       log: "",
-      lex: new PackedTrie(window.packed_lexicon),
+      // lex: new PackedTrie(window.packed_lexicon),
+      lex: window.lexicon,
       completionsPreview: [],
     };
   },
@@ -58,22 +59,20 @@ export default {
       this.upperCaseWord = this.word.toUpperCase();
 
       let checkPlainText = /^([A-Z]|\.)*$/;
+      let queryRegexp;
       if (checkPlainText.test(this.upperCaseWord)) {
-        this.completions =
-          this.word.length > 0
-            ? this.lex.search(this.upperCaseWord, {
-                prefix: true,
-                wildcard: ".",
-              })
-            : [];
+        this.completions = [];
+        queryRegexp = new RegExp("^" + this.upperCaseWord);
       } else {
         this.completions = [];
-        let queryRegexp = new RegExp("^" + this.word + "$");
-        for (const key in this.dictionary) {
-          if (queryRegexp.test(key) || queryRegexp.test(key.toLowerCase())) {
-            this.completions.push(key);
+        queryRegexp = new RegExp("^" + this.word + "$");
+      }
+      if (this.word.length >= 1) {
+        this.lex.forEach((word) => {
+          if (queryRegexp.test(word) || queryRegexp.test(word.toLowerCase())) {
+            this.completions.push(word);
           }
-        }
+        });
       }
 
       if (this.completions.length > 0) {
