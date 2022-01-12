@@ -5,6 +5,7 @@
       :value="word"
       type="text"
       @input="handleInput"
+      v-on:keyup.enter="handleEnter"
       placeholder="Please enter your word..."
     />
   </div>
@@ -29,6 +30,10 @@ export default {
       this.word = evt.target.value;
       this.$emit("textInput", this.word);
     },
+    handleEnter(evt) {
+      this.word = evt.target.value;
+      this.$emit("textEntered", this.word);
+    },
   },
   watch: {
     "$route.params.queryWord": function (queryWord) {
@@ -36,7 +41,6 @@ export default {
       this.$emit("textInput", this.word);
     },
   },
-
 };
 </script>
 

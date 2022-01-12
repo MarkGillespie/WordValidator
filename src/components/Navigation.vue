@@ -2,6 +2,7 @@
   <div id="nav-bar">
     <router-link to="/">Dictionary</router-link>
     <router-link to="/Anagrammer">Anagrammer</router-link>
+    <router-link to="/Games/Wrdle">Wrdle</router-link>
   </div>
 </template>
 
