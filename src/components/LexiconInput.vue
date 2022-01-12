@@ -5,7 +5,7 @@
       :value="customLexicon"
       type="text"
       @input="handleInput"
-      placeholder="Enter additional words to consider"
+      placeholder="Enter additional words to search through"
     />
   </div>
 </template>
