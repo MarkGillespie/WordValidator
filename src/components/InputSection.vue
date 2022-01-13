@@ -15,7 +15,7 @@
 export default {
   name: "InputSection",
   components: {},
-  props: [],
+  props: { clearOnEnter: { default: false } },
   data() {
     return { word: "" };
   },
@@ -33,6 +33,9 @@ export default {
     handleEnter(evt) {
       this.word = evt.target.value;
       this.$emit("textEntered", this.word);
+      if (this.clearOnEnter) {
+        this.word = "";
+      }
     },
   },
   watch: {
