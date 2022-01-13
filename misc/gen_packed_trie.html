@@ -1,0 +1,26 @@
+<head>
+  <script
+    type="text/javascript"
+    src="https://unpkg.com/tiny-trie@0.2.6/dist/tiny-trie.min.js"
+  ></script>
+  <script type="text/javascript" src="lexicon.js"></script>
+  <script type="text/javascript">
+    function compress() {
+      console.log(lexicon);
+      console.time("construt");
+      const trie = TinyTrie.createSync(lexicon);
+      console.timeEnd("construt");
+      console.time("freeze");
+      trie.freeze();
+      console.timeEnd("freeze");
+      console.time("encode");
+      const encoded = trie.encode();
+      console.timeEnd("encode");
+      console.log(encoded);
+    }
+  </script>
+</head>
+
+<body>
+  <button onclick="compress()">Compress</button>
+</body>

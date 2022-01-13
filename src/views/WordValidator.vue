@@ -35,7 +35,6 @@ import InputSection from "../components/InputSection.vue";
 import CompletionSection from "../components/CompletionSection.vue";
 import LexiconInput from "../components/LexiconInput.vue";
 import Navigation from "../components/Navigation.vue";
-// import { PackedTrie } from "../../public/resources/packed-trie.js";
 
 export default {
   name: "WordValidator",
@@ -56,7 +55,7 @@ export default {
       isWord: false,
       definition: "",
       log: "",
-      // lex: new PackedTrie(window.packed_lexicon),
+      trie: window.trie,
       lex: window.lexicon,
       customLexicon: null,
       customLexiconCompletions: [],
@@ -90,28 +89,46 @@ export default {
       this.customLexiconCompletions = [];
 
       let checkPlainText = /^([A-Z]|\.)*$/;
-      let queryRegexp;
       if (checkPlainText.test(this.upperCaseWord)) {
-        queryRegexp = new RegExp("^" + this.upperCaseWord);
-      } else {
-        queryRegexp = new RegExp("^" + this.word + "$");
-      }
-      if (this.word.length >= 1) {
-        this.lex.forEach((word) => {
-          if (queryRegexp.test(word) || queryRegexp.test(word.toLowerCase())) {
-            this.completions.push(word);
+        if (this.word.length >= 1) {
+          this.completions = this.trie.search(this.upperCaseWord, {
+            prefix: true,
+            wildcard: ".",
+          });
+          if (this.usingCustomLexicon) {
+            const queryRegexp = new RegExp("^" + this.upperCaseWord);
+            this.customLexicon.forEach((word) => {
+              if (
+                queryRegexp.test(word) ||
+                queryRegexp.test(word.toLowerCase())
+              ) {
+                this.customLexiconCompletions.push(word);
+              }
+            });
           }
-        });
-
-        if (this.usingCustomLexicon) {
-          this.customLexicon.forEach((word) => {
+        }
+      } else {
+        const queryRegexp = new RegExp("^" + this.word + "$");
+        if (this.word.length >= 1) {
+          this.lex.forEach((word) => {
             if (
               queryRegexp.test(word) ||
               queryRegexp.test(word.toLowerCase())
             ) {
-              this.customLexiconCompletions.push(word);
+              this.completions.push(word);
             }
           });
+
+          if (this.usingCustomLexicon) {
+            this.customLexicon.forEach((word) => {
+              if (
+                queryRegexp.test(word) ||
+                queryRegexp.test(word.toLowerCase())
+              ) {
+                this.customLexiconCompletions.push(word);
+              }
+            });
+          }
         }
       }
 
