@@ -1,3 +1,5 @@
+// deprecated. Most recent version is in packed-trie.plain.js
+
 "use strict";
 
 const BASE64_INT_TO_CHAR = `\

@@ -75,6 +75,11 @@ export default {
       this.completions = [];
       this.customLexiconCompletions = [];
 
+      this.completions = window.trie.anagramSearch(this.upperCaseWord, {
+        wildcard: ".",
+        // multiword: true,
+      });
+
       let checkPlainText = /^([A-Z]|\.)*$/;
       if (checkPlainText.test(this.upperCaseWord)) {
         const wordLen = this.upperCaseWord.length;
@@ -91,14 +96,14 @@ export default {
           queryRegexp = new RegExp("^" + sortedWord + "$");
         }
 
-        this.lex.forEach((word) => {
-          if (
-            word.length === wordLen &&
-            queryRegexp.test(word.split("").sort().join(""))
-          ) {
-            this.completions.push(word);
-          }
-        });
+        // this.lex.forEach((word) => {
+        //   if (
+        //     word.length === wordLen &&
+        //     queryRegexp.test(word.split("").sort().join(""))
+        //   ) {
+        //     this.completions.push(word);
+        //   }
+        // });
         if (this.usingCustomLexicon) {
           this.customLexicon.forEach((word) => {
             if (
