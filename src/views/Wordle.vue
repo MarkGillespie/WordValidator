@@ -119,28 +119,43 @@ export default {
       this.displayNewInput("");
       const guess = inputText.toUpperCase().slice(0, this.wordLength);
       const valid = guess.length == this.wordLength && this.lex.includes(guess);
+
+      // eslint-disable-next-line no-constant-condition
       if (valid) {
         const guessResult = {
           hash: this.pastGuesses.length + "#" + guess,
           tiles: [],
         };
+        // identify correct letters, mark all others as wrong for now
+        const matchedLetter = new Array(guess.length).fill(false);
         for (let iC = 0; iC < guess.length; iC++) {
           if (guess[iC] == this.secretWord[iC]) {
             guessResult.tiles.push({ letter: guess[iC], state: "CORRECT" });
+            matchedLetter[iC] = true;
             // this.letterStates[guess[iC]] = "CORRECT";
             // Have to set object fields with a special function so that vue will notice
             this.$set(this.letterStates, guess[iC], "CORRECT");
-          } else if (this.secretWord.includes(guess[iC])) {
-            guessResult.tiles.push({ letter: guess[iC], state: "MISPLACED" });
-            if (this.letterStates[guess[iC]] != "CORRECT") {
-              // this.letterStates[guess[iC]] = "MISPLACED";
-              this.$set(this.letterStates, guess[iC], "MISPLACED");
-            }
           } else {
             guessResult.tiles.push({ letter: guess[iC], state: "WRONG" });
             // this.letterStates[guess[iC]] = "WRONG";
             this.$set(this.letterStates, guess[iC], "WRONG");
           }
+        }
+        // identify misplaced letters
+        for (let iC = 0; iC < guess.length; iC++) {
+          if (guessResult.tiles[iC].state != "CORRECT") {
+            for (let jC = 0; jC < guess.length; jC++) {
+              if (!matchedLetter[jC] && guess[iC] == this.secretWord[jC]) {
+                guessResult.tiles[iC].state = "MISPLACED";
+                matchedLetter[jC] = true;
+                if (this.letterStates[guess[iC]] == "WRONG") {
+                  this.$set(this.letterStates, guess[iC], "MISPLACED");
+                }
+              }
+            }
+          }
+
+          // Set tile hash
           guessResult.tiles[guessResult.tiles.length - 1].hash =
             this.pastGuesses.length +
             "#" +
