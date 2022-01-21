@@ -18,6 +18,7 @@
     />
     <button v-on:click="generateWord()">New Board</button>
     <button v-on:click="revealAnswer()">Reveal Answer</button>
+    <button v-on:click="showDefinition()">What is this word?</button>
     <Navigation />
   </div>
 </template>
@@ -75,20 +76,12 @@ export default {
       },
     };
   },
+  mounted: function () {
+    this.init();
+  },
   watch: {
     $route: function () {
-      this.gameName = "W" + this.$route.params.pathMatch + "rdle";
-      this.wordLength = this.$route.params.pathMatch.length + 5;
-      this.currentGuess = "";
-      if (this.$route.params.secretWord) {
-        // TODO: what do you do if this.wordLength doesn't match secretWord's length?
-        this.reset();
-        this.secretWord = this.decode(this.$route.params.secretWord);
-        console.log(this.secretWord);
-      } else {
-        this.reset();
-        this.generateWord();
-      }
+      this.init();
     },
   },
   computed: {
@@ -111,15 +104,32 @@ export default {
     },
   },
   methods: {
+    init() {
+      this.gameName = "W" + this.$route.params.pathMatch + "rdle";
+      this.wordLength = this.$route.params.pathMatch.length + 5;
+      this.currentGuess = "";
+      if (this.$route.params.secretWord) {
+        // TODO: what do you do if this.wordLength doesn't match secretWord's length?
+        this.reset();
+        this.secretWord = this.decode(this.$route.params.secretWord);
+        console.log(this.secretWord);
+      } else {
+        this.reset();
+        this.generateWord();
+      }
+    },
     generateWord() {
       this.secretWord =
         this.validWords[Math.floor(Math.random() * this.validWords.length)];
       console.log(this.secretWord);
-      if (this.$route.path.indexOf("dle/") >= 0) {
-        this.$router.push(this.encode(this.secretWord));
-      } else {
-        this.$router.push(this.gameName + "/" + this.encode(this.secretWord));
-      }
+      // if (this.$route.path.indexOf("dle/") >= 0) {
+      //   this.$router.push(this.encode(this.secretWord));
+      // } else {
+      //   // this.$router.push("/" + this.gameName + "/" + this.encode(this.secretWord));
+      // }
+      this.$router.push(
+        "/Games/" + this.gameName + "/" + this.encode(this.secretWord)
+      );
     },
     reset() {
       this.pastGuesses = [];
@@ -130,6 +140,9 @@ export default {
     },
     revealAnswer() {
       this.checkGuess(this.secretWord);
+    },
+    showDefinition() {
+      this.$router.push("/" + this.secretWord);
     },
     displayNewInput(inputText) {
       this.currentGuess = inputText
