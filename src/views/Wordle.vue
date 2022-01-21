@@ -75,19 +75,21 @@ export default {
       },
     };
   },
-  mounted: function () {
-    this.gameName = "W" + this.$route.params.pathMatch + "rdle";
-    this.wordLength = this.$route.params.pathMatch.length + 5;
-    this.currentGuess = "";
-    if (this.$route.params.secretWord) {
-      // TODO: what do you do if this.wordLength doesn't match secretWord's length?
-      this.reset();
-      this.secretWord = this.decode(this.$route.params.secretWord);
-      console.log(this.secretWord);
-    } else {
-      this.reset();
-      this.generateWord();
-    }
+  watch: {
+    $route: function () {
+      this.gameName = "W" + this.$route.params.pathMatch + "rdle";
+      this.wordLength = this.$route.params.pathMatch.length + 5;
+      this.currentGuess = "";
+      if (this.$route.params.secretWord) {
+        // TODO: what do you do if this.wordLength doesn't match secretWord's length?
+        this.reset();
+        this.secretWord = this.decode(this.$route.params.secretWord);
+        console.log(this.secretWord);
+      } else {
+        this.reset();
+        this.generateWord();
+      }
+    },
   },
   computed: {
     gameLength: function () {
