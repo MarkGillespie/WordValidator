@@ -16,6 +16,7 @@ export const router = new VueRouter({
     { path: "/Anagrammer", component: Anagrammer, props: true },
     { path: "/Anagrammer/:queryWord", component: Anagrammer, props: true },
     { path: "/Games/W(o*)rdle", component: Wordle, props: true },
+    { path: "/Games/W(o*)rdle/:secretWord", component: Wordle, props: true },
     /* must come after other paths */
     { path: "/:queryWord", component: WordValidator, props: true },
     { path: "*", component: PageNotFound, props: true },

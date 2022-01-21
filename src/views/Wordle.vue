@@ -16,6 +16,8 @@
       @textInput="displayNewInput"
       :clearOnEnter="true"
     />
+    <button v-on:click="generateWord()">New Board</button>
+    <button v-on:click="revealAnswer()">Reveal Answer</button>
     <Navigation />
   </div>
 </template>
@@ -76,7 +78,16 @@ export default {
   mounted: function () {
     this.gameName = "W" + this.$route.params.pathMatch + "rdle";
     this.wordLength = this.$route.params.pathMatch.length + 5;
-    this.reset();
+    this.currentGuess = "";
+    if (this.$route.params.secretWord) {
+      // TODO: what do you do if this.wordLength doesn't match secretWord's length?
+      this.reset();
+      this.secretWord = this.decode(this.$route.params.secretWord);
+      console.log(this.secretWord);
+    } else {
+      this.reset();
+      this.generateWord();
+    }
   },
   computed: {
     gameLength: function () {
@@ -98,15 +109,25 @@ export default {
     },
   },
   methods: {
-    reset() {
-      this.pastGuesses = [];
-      this.currentGuess = "".padEnd(this.wordLength, " ");
+    generateWord() {
       this.secretWord =
         this.validWords[Math.floor(Math.random() * this.validWords.length)];
       console.log(this.secretWord);
+      if (this.$route.path.indexOf("dle/") >= 0) {
+        this.$router.push(this.encode(this.secretWord));
+      } else {
+        this.$router.push(this.gameName + "/" + this.encode(this.secretWord));
+      }
+    },
+    reset() {
+      this.pastGuesses = [];
+      this.currentGuess = "".padEnd(this.wordLength, " ");
       [..."ABCDEFGHIJKLMNOPQRSTUVWXYZ"].forEach((l) => {
         this.letterStates[l] = "NONE";
       });
+    },
+    revealAnswer() {
+      this.checkGuess(this.secretWord);
     },
     displayNewInput(inputText) {
       this.currentGuess = inputText
@@ -169,6 +190,31 @@ export default {
 
         this.pastGuesses.push(guessResult);
       }
+    },
+    chrAt(text, pos) {
+      return text.charCodeAt(pos) - 65;
+    },
+    encode(text) {
+      const key = "WRDLE";
+      let result = "";
+      for (let i = 0; i < text.length; i++) {
+        result += String.fromCharCode(
+          65 + ((this.chrAt(text, i) + this.chrAt(key, i % key.length)) % 26)
+        );
+      }
+      return result;
+    },
+    decode(text) {
+      const key = "WRDLE";
+      let result = "";
+      for (let i = 0; i < text.length; i++) {
+        result += String.fromCharCode(
+          65 +
+            ((this.chrAt(text, i) + (26 - this.chrAt(key, i % key.length))) %
+              26)
+        );
+      }
+      return result;
     },
   },
 };
