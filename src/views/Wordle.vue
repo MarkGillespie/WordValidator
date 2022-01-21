@@ -19,6 +19,12 @@
     <button v-on:click="generateWord()">New Board</button>
     <button v-on:click="revealAnswer()">Reveal Answer</button>
     <button v-on:click="showDefinition()">What is this word?</button>
+    <button v-if="useSimpleWords" v-on:click="setUseSimpleWords(false)">
+      Allow weird words
+    </button>
+    <button v-else v-on:click="setUseSimpleWords(true)">
+      Use simple words
+    </button>
     <Navigation />
   </div>
 </template>
@@ -28,6 +34,7 @@ import InputSection from "../components/InputSection.vue";
 import WordleBoard from "../components/WordleBoard.vue";
 import WordleValidLetters from "../components/WordleValidLetters.vue";
 import Navigation from "../components/Navigation.vue";
+import { simple_lexicon } from "../../public/resources/simple_lexicon.js";
 
 export default {
   name: "Wordle",
@@ -40,7 +47,8 @@ export default {
   },
   data() {
     return {
-      lex: window.lexicon,
+      full_lex: window.lexicon,
+      useSimpleWords: true,
       gameName: "",
       wordLength: 0,
       secretWord: "",
@@ -102,6 +110,9 @@ export default {
       }
       return guessTiles;
     },
+    lex: function () {
+      return this.useSimpleWords ? simple_lexicon : this.full_lex;
+    },
   },
   methods: {
     init() {
@@ -122,11 +133,6 @@ export default {
       this.secretWord =
         this.validWords[Math.floor(Math.random() * this.validWords.length)];
       console.log(this.secretWord);
-      // if (this.$route.path.indexOf("dle/") >= 0) {
-      //   this.$router.push(this.encode(this.secretWord));
-      // } else {
-      //   // this.$router.push("/" + this.gameName + "/" + this.encode(this.secretWord));
-      // }
       this.$router.push(
         "/Games/" + this.gameName + "/" + this.encode(this.secretWord)
       );
@@ -144,6 +150,10 @@ export default {
     showDefinition() {
       this.$router.push("/" + this.secretWord);
     },
+    setUseSimpleWords(arg) {
+      this.useSimpleWords = arg;
+      this.generateWord();
+    },
     displayNewInput(inputText) {
       this.currentGuess = inputText
         .toUpperCase()
@@ -154,7 +164,8 @@ export default {
       this.currentGuess = "";
       this.displayNewInput("");
       const guess = inputText.toUpperCase().slice(0, this.wordLength);
-      const valid = guess.length == this.wordLength && this.lex.includes(guess);
+      const valid =
+        guess.length == this.wordLength && this.full_lex.includes(guess);
 
       // eslint-disable-next-line no-constant-condition
       if (valid) {
