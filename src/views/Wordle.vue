@@ -151,6 +151,7 @@ export default {
                 if (this.letterStates[guess[iC]] == "WRONG") {
                   this.$set(this.letterStates, guess[iC], "MISPLACED");
                 }
+                break;
               }
             }
           }
