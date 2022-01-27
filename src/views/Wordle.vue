@@ -131,11 +131,11 @@ export default {
     },
     generateWord() {
       this.secretWord =
-            this.validWords[Math.floor(Math.random() * this.validWords.length)];
-        while (!this.full_lex.includes(this.secretWord)) {
-            this.secretWord =
-                this.validWords[Math.floor(Math.random() * this.validWords.length)];
-        }
+        this.validWords[Math.floor(Math.random() * this.validWords.length)];
+      while (!this.full_lex.includes(this.secretWord)) {
+        this.secretWord =
+          this.validWords[Math.floor(Math.random() * this.validWords.length)];
+      }
       console.log(this.secretWord);
       this.$router.push(
         "/Games/" + this.gameName + "/" + this.encode(this.secretWord)
@@ -183,13 +183,15 @@ export default {
           if (guess[iC] == this.secretWord[iC]) {
             guessResult.tiles.push({ letter: guess[iC], state: "CORRECT" });
             matchedLetter[iC] = true;
-            // this.letterStates[guess[iC]] = "CORRECT";
             // Have to set object fields with a special function so that vue will notice
+            // this.letterStates[guess[iC]] = "CORRECT";
             this.$set(this.letterStates, guess[iC], "CORRECT");
           } else {
             guessResult.tiles.push({ letter: guess[iC], state: "WRONG" });
             // this.letterStates[guess[iC]] = "WRONG";
-            this.$set(this.letterStates, guess[iC], "WRONG");
+            if (this.letterStates[guess[iC]] == "NONE") {
+              this.$set(this.letterStates, guess[iC], "WRONG");
+            }
           }
         }
         // identify misplaced letters
@@ -199,7 +201,8 @@ export default {
               if (!matchedLetter[jC] && guess[iC] == this.secretWord[jC]) {
                 guessResult.tiles[iC].state = "MISPLACED";
                 matchedLetter[jC] = true;
-                if (this.letterStates[guess[iC]] == "WRONG") {
+                if (this.letterStates[guess[iC]] == "NONE") {
+                  this.letterStates[guess[iC]] = "MISPLACED";
                   this.$set(this.letterStates, guess[iC], "MISPLACED");
                 }
                 break;
@@ -217,6 +220,7 @@ export default {
             "#" +
             guessResult.tiles[guessResult.tiles.length - 1].state;
         }
+        console.log(this.letterStates);
 
         this.pastGuesses.push(guessResult);
       }
