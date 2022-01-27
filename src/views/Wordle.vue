@@ -131,7 +131,11 @@ export default {
     },
     generateWord() {
       this.secretWord =
-        this.validWords[Math.floor(Math.random() * this.validWords.length)];
+            this.validWords[Math.floor(Math.random() * this.validWords.length)];
+        while (!this.full_lex.includes(this.secretWord)) {
+            this.secretWord =
+                this.validWords[Math.floor(Math.random() * this.validWords.length)];
+        }
       console.log(this.secretWord);
       this.$router.push(
         "/Games/" + this.gameName + "/" + this.encode(this.secretWord)
