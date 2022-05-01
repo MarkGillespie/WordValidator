@@ -25,6 +25,30 @@
       />
     </div>
     <LexiconInput @customLexiconInput="useCustomLexicon" />
+    <div>
+    <label>
+    min length:
+    <input
+      v-model="minLength"
+      type="number"
+      value="minLength"
+      @input="checkWord"
+    />
+    </label>
+    &nbsp;
+    &nbsp;
+    &nbsp;
+    &nbsp;
+    <label>
+    Use simple words:
+    <input
+      v-model="useSimpleWords"
+      type="checkbox"
+      value="useSimpleWords"
+      @change="checkWord"
+    />
+    </label>
+    </div>
     <Navigation />
   </div>
 </template>
@@ -35,6 +59,7 @@ import InputSection from "../components/InputSection.vue";
 import CompletionSection from "../components/CompletionSection.vue";
 import LexiconInput from "../components/LexiconInput.vue";
 import Navigation from "../components/Navigation.vue";
+import { simple_lexicon } from "../../public/resources/simple_lexicon.js";
 
 export default {
   name: "WordValidator",
@@ -56,9 +81,11 @@ export default {
       definition: "",
       log: "",
       trie: window.trie,
-      lex: window.lexicon,
+      full_lex: window.lexicon,
       customLexicon: null,
       customLexiconCompletions: [],
+      useSimpleWords: false,
+      minLength: 4,
     };
   },
   mounted: function () {
@@ -71,6 +98,9 @@ export default {
     usingCustomLexicon: function () {
       return this.customLexicon && this.customLexicon.length > 0;
     },
+      lex: function () {
+          return this.useSimpleWords ? simple_lexicon : this.full_lex;
+      },
   },
   methods: {
     useCustomLexicon(customLexicon) {
@@ -130,6 +160,15 @@ export default {
             });
           }
         }
+      }
+      this.completions = this.completions.filter(s => {return s.length >= this.minLength;});
+      this.completions.sort((s,t) => {
+          if (s.length < t.length) {return false;} else if (s.length > t.length) {return true} else {return s > t;}
+      });
+      if (this.usingCustomLexicon) {
+        this.customLexiconCompletions.sort((s,t) => {
+            if (s.length < t.length) {return false;} else if (s.length > t.length) {return true} else {return s > t;}
+        });
       }
 
       if (this.completions.length > 0) {
